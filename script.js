@@ -154,7 +154,7 @@ document.getElementById('stop').addEventListener('click', () => {
     document.getElementById('stop').disabled = true;
 
     document.getElementById('menuPrincipal').innerHTML += `
-      <button id="downloadJson" class="btn btn-info btn-lg"><span class="material-icons">download</span></button>
+      <button id="downloadJson" class="btn btn-info btn-block"><span class="material-icons">download</span></button>
     `;
 
     document.getElementById('downloadJson').addEventListener('click', () => {
