@@ -105,14 +105,14 @@ document.getElementById('pause').addEventListener('click', () => {
     paused = true;
     pauseTime += new Date() - startTime - elapsedTime * 1000;
 
-    document.getElementById('pause').textContent = 'Continuar';
+    document.getElementById('pause').textContent = 'CONTINUAR';
     navigator.geolocation.clearWatch(watchId);
     clearInterval(timerInterval);
   } else if (tracking && paused) {
     paused = false;
     startTime = new Date() - elapsedTime * 1000;
 
-    document.getElementById('pause').textContent = 'Pausar';
+    document.getElementById('pause').textContent = 'PAUSAR';
     watchId = navigator.geolocation.watchPosition(
       (position) => {
         const { latitude, longitude, altitude } = position.coords;
@@ -168,11 +168,18 @@ document.getElementById('stop').addEventListener('click', () => {
       coordinates
     };
 
-    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-    const link = document.createElement('a');
-    link.href = URL.createObjectURL(blob);
-    link.download = 'tracking_data.json';
-    link.click();
+    // Cria o Blob do JSON
+    jsonBlob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+
+    // Exibe o botão de download
+    const downloadButton = document.getElementById('downloadJson');
+    downloadButton.classList.remove('hidden');
+    downloadButton.addEventListener('click', () => {
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(jsonBlob);
+      link.download = 'tracking_data.json';
+      link.click();
+    });
 
     document.getElementById('summary').classList.remove('hidden');
     document.getElementById('start').disabled = false;
