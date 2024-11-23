@@ -153,8 +153,8 @@ document.getElementById('stop').addEventListener('click', () => {
     document.getElementById('pause').disabled = true;
     document.getElementById('stop').disabled = true;
 
-    document.getElementById('menuPrincipal').innerHTML = `
-      <button id="downloadJson" class="btn btn-info btn-lg">BAIXAR</button>
+    document.getElementById('menuPrincipal').innerHTML += `
+      <button id="downloadJson" class="btn btn-info btn-lg"><span class="material-symbols-outlined">download</span></button>
     `;
 
     document.getElementById('downloadJson').addEventListener('click', () => {
