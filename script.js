@@ -181,11 +181,17 @@ document.getElementById('stop').addEventListener('click', () => {
     document.getElementById('pause').disabled = true;
     document.getElementById('stop').disabled = true;
 
+    document.getElementById('menuPrincipal').innerHTML += 
+    <button id="downloadJson" class="btn btn-info btn-lg"><span class="material-icons">download</span></button>
+  ;
+
+  document.getElementById('downloadJson').addEventListener('click', () => {
     const link = document.createElement('a');
     link.href = URL.createObjectURL(jsonBlob);
     link.download = 'tracking_data.json';
     link.click();
-  }
+  });
+}
 });
 
 // Inicializa o mapa ao carregar
