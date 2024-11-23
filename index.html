@@ -36,7 +36,6 @@
           PAUSAR
         </button>
         <button id="stop" class="btn btn-danger btn-lg" disabled>PARAR</button>
-        <button id="stop" class="btn btn-danger btn-lg" disabled>PARAR</button>
       </div>
       <div id="summary" class="hidden text-center">
         <p>
@@ -59,7 +58,7 @@
     <script>
       if ("serviceWorker" in navigator) {
         navigator.serviceWorker
-          .register("service-worker.js")
+          .register("./service-worker.js")
           .then(() => {
             console.log("Service Worker registrado com sucesso.");
           })
