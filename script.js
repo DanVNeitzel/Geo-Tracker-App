@@ -181,9 +181,9 @@ document.getElementById('stop').addEventListener('click', () => {
     document.getElementById('pause').disabled = true;
     document.getElementById('stop').disabled = true;
 
-    document.getElementById('menuPrincipal').innerHTML += 
+    document.getElementById('menuPrincipal').innerHTML += `
     <button id="downloadJson" class="btn btn-info btn-lg"><span class="material-icons">download</span></button>
-  ;
+  `;
 
   document.getElementById('downloadJson').addEventListener('click', () => {
     const link = document.createElement('a');
