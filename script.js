@@ -7,11 +7,11 @@ let jsonBlob = null; // Variável global para armazenar o JSON gerado
 
 // Inicializa o mapa
 function initMap() {
-  map = L.map('map').setView([0, 0], 13);
+  map = L.map('map').setView([0, 0], 40);
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: '© OpenStreetMap contributors',
+    attribution: '© Vida de Patinador',
   }).addTo(map);
-  polyline = L.polyline([], { color: 'blue' }).addTo(map);
+  polyline = L.polyline([], { color: 'Orange' }).addTo(map);
 }
 
 // Calcula a distância entre dois pontos
@@ -153,8 +153,8 @@ document.getElementById('stop').addEventListener('click', () => {
     document.getElementById('pause').disabled = true;
     document.getElementById('stop').disabled = true;
 
-    document.getElementById('speedSummary').innerHTML = `
-      <button id="downloadJson" class="btn btn-primary mt-3">Baixar JSON</button>
+    document.getElementById('menuPrincipal').innerHTML = `
+      <button id="downloadJson" class="btn btn-info btn-lg">BAIXAR</button>
     `;
 
     document.getElementById('downloadJson').addEventListener('click', () => {
