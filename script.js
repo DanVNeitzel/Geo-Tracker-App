@@ -5,7 +5,6 @@ let coordinates = [];
 let startTime, pauseTime = 0, elapsedTime = 0;
 let jsonBlob; // Variável global para armazenar o Blob JSON
 
-// Inicializa o mapa
 function initMap() {
   map = L.map('map').setView([0, 0], 13);
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -14,9 +13,8 @@ function initMap() {
   polyline = L.polyline([], { color: 'blue' }).addTo(map);
 }
 
-// Calcula a distância entre dois pontos geográficos em km
 function calculateDistance(lat1, lng1, lat2, lng2) {
-  const R = 6371; // Raio da Terra em km
+  const R = 6371;
   const dLat = ((lat2 - lat1) * Math.PI) / 180;
   const dLng = ((lng2 - lng1) * Math.PI) / 180;
   const a =
@@ -28,7 +26,6 @@ function calculateDistance(lat1, lng1, lat2, lng2) {
   return R * c;
 }
 
-// Atualiza o tempo decorrido
 function updateElapsedTime() {
   const now = new Date();
   elapsedTime = (now - startTime - pauseTime) / 1000;
@@ -38,7 +35,6 @@ function updateElapsedTime() {
   document.getElementById('timeElapsed').textContent = `${hours}:${minutes}:${seconds}`;
 }
 
-// Envia uma notificação push
 function sendPushNotification(message) {
   if ('Notification' in window && Notification.permission === 'granted') {
     navigator.serviceWorker.getRegistration().then((registration) => {
@@ -52,7 +48,6 @@ function sendPushNotification(message) {
   }
 }
 
-// Inicia o rastreamento
 document.getElementById('start').addEventListener('click', () => {
   if (!tracking && navigator.geolocation) {
     tracking = true;
@@ -100,7 +95,6 @@ document.getElementById('start').addEventListener('click', () => {
   }
 });
 
-// Pausa o rastreamento
 document.getElementById('pause').addEventListener('click', () => {
   if (tracking && !paused) {
     paused = true;
@@ -141,7 +135,6 @@ document.getElementById('pause').addEventListener('click', () => {
   }
 });
 
-// Para o rastreamento
 document.getElementById('stop').addEventListener('click', () => {
   if (tracking) {
     tracking = false;
@@ -169,10 +162,8 @@ document.getElementById('stop').addEventListener('click', () => {
       coordinates
     };
 
-    // Cria o Blob do JSON
     jsonBlob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
 
-    // Exibe o botão de download
     const downloadButton = document.getElementById('downloadJson');
     downloadButton.classList.remove('hidden');
     downloadButton.addEventListener('click', () => {
@@ -189,5 +180,4 @@ document.getElementById('stop').addEventListener('click', () => {
   }
 });
 
-// Inicializa o mapa ao carregar
 window.onload = initMap;
