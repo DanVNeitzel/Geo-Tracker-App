@@ -11,7 +11,7 @@ function initMap() {
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '© Vida de Patinador',
   }).addTo(map);
-  polyline = L.polyline([], { color: 'Orange' }).addTo(map);
+  polyline = L.polyline([], { color: 'Orange', weight: 3 }).addTo(map);
 }
 
 // Calcula a distância entre dois pontos
