@@ -3,6 +3,7 @@ let tracking = false, paused = false;
 let totalDistance = 0, previousDistance = 0;
 let coordinates = [];
 let startTime, pauseTime = 0, elapsedTime = 0;
+let jsonBlob; // Variável global para armazenar o Blob JSON
 
 // Inicializa o mapa
 function initMap() {
@@ -105,14 +106,14 @@ document.getElementById('pause').addEventListener('click', () => {
     paused = true;
     pauseTime += new Date() - startTime - elapsedTime * 1000;
 
-    document.getElementById('pause').textContent = 'CONTINUAR';
+    document.getElementById('pause').textContent = 'Continuar';
     navigator.geolocation.clearWatch(watchId);
     clearInterval(timerInterval);
   } else if (tracking && paused) {
     paused = false;
     startTime = new Date() - elapsedTime * 1000;
 
-    document.getElementById('pause').textContent = 'PAUSAR';
+    document.getElementById('pause').textContent = 'Pausar';
     watchId = navigator.geolocation.watchPosition(
       (position) => {
         const { latitude, longitude, altitude } = position.coords;
