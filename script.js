@@ -3,18 +3,20 @@ let tracking = false, paused = false;
 let totalDistance = 0, previousDistance = 0;
 let coordinates = [];
 let startTime, pauseTime = 0, elapsedTime = 0;
-let jsonBlob; // Variável global para armazenar o Blob JSON
+let jsonBlob = null; // Variável global para armazenar o JSON gerado
 
+// Inicializa o mapa
 function initMap() {
   map = L.map('map').setView([0, 0], 13);
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: '© OpenStreetMap contributors'
+    attribution: '© OpenStreetMap contributors',
   }).addTo(map);
   polyline = L.polyline([], { color: 'blue' }).addTo(map);
 }
 
+// Calcula a distância entre dois pontos
 function calculateDistance(lat1, lng1, lat2, lng2) {
-  const R = 6371;
+  const R = 6371; // Raio da Terra em km
   const dLat = ((lat2 - lat1) * Math.PI) / 180;
   const dLng = ((lng2 - lng1) * Math.PI) / 180;
   const a =
@@ -26,6 +28,7 @@ function calculateDistance(lat1, lng1, lat2, lng2) {
   return R * c;
 }
 
+// Atualiza o tempo decorrido
 function updateElapsedTime() {
   const now = new Date();
   elapsedTime = (now - startTime - pauseTime) / 1000;
@@ -35,19 +38,7 @@ function updateElapsedTime() {
   document.getElementById('timeElapsed').textContent = `${hours}:${minutes}:${seconds}`;
 }
 
-function sendPushNotification(message) {
-  if ('Notification' in window && Notification.permission === 'granted') {
-    navigator.serviceWorker.getRegistration().then((registration) => {
-      if (registration) {
-        registration.showNotification('Rastreamento', {
-          body: message,
-          icon: './icon-192.png'
-        });
-      }
-    });
-  }
-}
-
+// Inicia o rastreamento
 document.getElementById('start').addEventListener('click', () => {
   if (!tracking && navigator.geolocation) {
     tracking = true;
@@ -72,10 +63,6 @@ document.getElementById('start').addEventListener('click', () => {
             latitude,
             longitude
           );
-          if (totalDistance > previousDistance + 0.1) {
-            sendPushNotification(`Você percorreu ${totalDistance.toFixed(2)} km!`);
-            previousDistance = totalDistance;
-          }
         } else {
           document.getElementById('startLat').textContent = latitude.toFixed(6);
           document.getElementById('startLng').textContent = longitude.toFixed(6);
@@ -95,23 +82,21 @@ document.getElementById('start').addEventListener('click', () => {
   }
 });
 
+// Pausa o rastreamento
 document.getElementById('pause').addEventListener('click', () => {
   if (tracking && !paused) {
     paused = true;
     pauseTime += new Date() - startTime - elapsedTime * 1000;
-
-    document.getElementById('pause').textContent = 'Continuar';
+    document.getElementById('pause').textContent = 'CONTINUAR';
     navigator.geolocation.clearWatch(watchId);
     clearInterval(timerInterval);
   } else if (tracking && paused) {
     paused = false;
     startTime = new Date() - elapsedTime * 1000;
-
-    document.getElementById('pause').textContent = 'Pausar';
+    document.getElementById('pause').textContent = 'PAUSAR';
     watchId = navigator.geolocation.watchPosition(
       (position) => {
         const { latitude, longitude, altitude } = position.coords;
-
         if (coordinates.length > 0) {
           const lastCoords = coordinates[coordinates.length - 1];
           totalDistance += calculateDistance(
@@ -121,7 +106,6 @@ document.getElementById('pause').addEventListener('click', () => {
             longitude
           );
         }
-
         coordinates.push({ latitude, longitude });
         polyline.addLatLng([latitude, longitude]);
         map.setView([latitude, longitude]);
@@ -130,11 +114,11 @@ document.getElementById('pause').addEventListener('click', () => {
       (error) => alert('Erro ao acessar localização: ' + error.message),
       { enableHighAccuracy: true }
     );
-
     timerInterval = setInterval(updateElapsedTime, 1000);
   }
 });
 
+// Para o rastreamento
 document.getElementById('stop').addEventListener('click', () => {
   if (tracking) {
     tracking = false;
@@ -150,34 +134,37 @@ document.getElementById('stop').addEventListener('click', () => {
       start: {
         latitude: parseFloat(document.getElementById('startLat').textContent),
         longitude: parseFloat(document.getElementById('startLng').textContent),
-        altitude: document.getElementById('startAlt').textContent
+        altitude: document.getElementById('startAlt').textContent,
       },
       end: {
         latitude: lastCoords.latitude,
         longitude: lastCoords.longitude,
-        altitude: document.getElementById('endAlt').textContent
+        altitude: document.getElementById('endAlt').textContent,
       },
       distance: totalDistance,
       elapsedTime: document.getElementById('timeElapsed').textContent,
-      coordinates
+      coordinates,
     };
 
     jsonBlob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-
-    const downloadButton = document.getElementById('downloadJson');
-    downloadButton.classList.remove('hidden');
-    downloadButton.addEventListener('click', () => {
-      const link = document.createElement('a');
-      link.href = URL.createObjectURL(jsonBlob);
-      link.download = 'tracking_data.json';
-      link.click();
-    });
 
     document.getElementById('summary').classList.remove('hidden');
     document.getElementById('start').disabled = false;
     document.getElementById('pause').disabled = true;
     document.getElementById('stop').disabled = true;
+
+    document.getElementById('speedSummary').innerHTML = `
+      <button id="downloadJson" class="btn btn-primary mt-3">Baixar JSON</button>
+    `;
+
+    document.getElementById('downloadJson').addEventListener('click', () => {
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(jsonBlob);
+      link.download = 'tracking_data.json';
+      link.click();
+    });
   }
 });
 
+// Inicializa o mapa ao carregar
 window.onload = initMap;
