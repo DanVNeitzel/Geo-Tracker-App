@@ -87,13 +87,13 @@ document.getElementById('pause').addEventListener('click', () => {
   if (tracking && !paused) {
     paused = true;
     pauseTime += new Date() - startTime - elapsedTime * 1000;
-    document.getElementById('pause').textContent = 'CONTINUAR';
+    document.getElementById('pause').textContent = '<span class="material-icons"> play_arrow </span>';
     navigator.geolocation.clearWatch(watchId);
     clearInterval(timerInterval);
   } else if (tracking && paused) {
     paused = false;
     startTime = new Date() - elapsedTime * 1000;
-    document.getElementById('pause').textContent = 'PAUSAR';
+    document.getElementById('pause').textContent = '<span class="material-icons"> pause </span>';
     watchId = navigator.geolocation.watchPosition(
       (position) => {
         const { latitude, longitude, altitude } = position.coords;
