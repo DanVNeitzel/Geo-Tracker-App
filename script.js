@@ -171,6 +171,8 @@ document.getElementById('stop').addEventListener('click', () => {
       },
       distance: totalDistance,
       elapsedTime: document.getElementById('timeElapsed').textContent,
+      maxSpeed,
+      avgSpeed: totalSpeed / speedCount,
       coordinates,
     };
 
