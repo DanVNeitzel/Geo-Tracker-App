@@ -47,14 +47,6 @@ function updateElapsedTime() {
 // Inicia o rastreamento
 document.getElementById('start').addEventListener('click', () => {
   if (!tracking && navigator.geolocation) {
-    // Limpa o mapa
-    polyline.setLatLngs([]); // Remove os pontos existentes da polyline
-    map.eachLayer((layer) => {
-      if (layer !== polyline && layer !== map.tileLayer) {
-        map.removeLayer(layer);
-      }
-    });
-
     tracking = true;
     paused = false;
     totalDistance = 0;
@@ -70,7 +62,7 @@ document.getElementById('start').addEventListener('click', () => {
 
     watchId = navigator.geolocation.watchPosition(
       (position) => {
-        const { latitude, longitude, altitude, speed } = position.coords;
+        const { latitude, longitude, altitude } = position.coords;
 
         if (coordinates.length > 0) {
           const lastCoords = coordinates[coordinates.length - 1];
