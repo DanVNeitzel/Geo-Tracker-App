@@ -4,6 +4,7 @@ let totalDistance = 0, previousDistance = 0;
 let coordinates = [];
 let startTime, pauseTime = 0, elapsedTime = 0;
 let jsonBlob = null; // Variável global para armazenar o JSON gerado
+let maxSpeed = 0, totalSpeed = 0, speedCount = 0; // Variáveis para velocidades
 
 // Inicializa o mapa
 function initMap() {
@@ -28,6 +29,11 @@ function calculateDistance(lat1, lng1, lat2, lng2) {
   return R * c;
 }
 
+// Calcula a velocidade entre dois pontos
+function calculateSpeed(distance, time) {
+  return distance / time; // Retorna velocidade em km/s
+}
+
 // Atualiza o tempo decorrido
 function updateElapsedTime() {
   const now = new Date();
@@ -41,9 +47,20 @@ function updateElapsedTime() {
 // Inicia o rastreamento
 document.getElementById('start').addEventListener('click', () => {
   if (!tracking && navigator.geolocation) {
+    // Limpa o mapa
+    polyline.setLatLngs([]); // Remove os pontos existentes da polyline
+    map.eachLayer((layer) => {
+      if (layer !== polyline && layer !== map.tileLayer) {
+        map.removeLayer(layer);
+      }
+    });
+
     tracking = true;
     paused = false;
     totalDistance = 0;
+    maxSpeed = 0;
+    totalSpeed = 0;
+    speedCount = 0;
     coordinates = [];
     startTime = new Date();
 
@@ -53,16 +70,24 @@ document.getElementById('start').addEventListener('click', () => {
 
     watchId = navigator.geolocation.watchPosition(
       (position) => {
-        const { latitude, longitude, altitude } = position.coords;
+        const { latitude, longitude, altitude, speed } = position.coords;
 
         if (coordinates.length > 0) {
           const lastCoords = coordinates[coordinates.length - 1];
-          totalDistance += calculateDistance(
+          const distance = calculateDistance(
             lastCoords.latitude,
             lastCoords.longitude,
             latitude,
             longitude
           );
+          totalDistance += distance;
+
+          // Calcula velocidade e atualiza máxima e média
+          const time = (new Date() - startTime - pauseTime) / 1000;
+          const calculatedSpeed = calculateSpeed(distance, time || 1);
+          maxSpeed = Math.max(maxSpeed, calculatedSpeed);
+          totalSpeed += calculatedSpeed;
+          speedCount++;
         } else {
           document.getElementById('startLat').textContent = latitude.toFixed(6);
           document.getElementById('startLng').textContent = longitude.toFixed(6);
@@ -72,7 +97,10 @@ document.getElementById('start').addEventListener('click', () => {
         coordinates.push({ latitude, longitude });
         polyline.addLatLng([latitude, longitude]);
         map.setView([latitude, longitude]);
+
         document.getElementById('distance').textContent = totalDistance.toFixed(2);
+        document.getElementById('maxSpeed').textContent = maxSpeed.toFixed(2); // Mostra velocidade máxima
+        document.getElementById('avgSpeed').textContent = (totalSpeed / speedCount).toFixed(2); // Mostra velocidade média
       },
       (error) => alert('Erro ao acessar localização: ' + error.message),
       { enableHighAccuracy: true }
